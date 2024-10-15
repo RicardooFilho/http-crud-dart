@@ -1,0 +1,19 @@
+{
+  "clients": [
+    {
+      "id": "e0c8",
+      "name": "Ricardo",
+      "saldo": 20
+    },
+    {
+      "id": "7eea",
+      "name": "Ricardo",
+      "saldo": 20
+    },
+    {
+      "id": "5010",
+      "name": "Ricardo Francisco",
+      "saldo": 2000
+    }
+  ]
+}
