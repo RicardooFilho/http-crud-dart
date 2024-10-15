@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'bank-component.dart';
 
 class BankerFormComponent extends StatefulWidget {
-  const BankerFormComponent({super.key});
+  final String? clientId;
+  final String? existingName;
+  final String? existingSaldo;
+
+  const BankerFormComponent({
+    super.key,
+    this.clientId,
+    this.existingName,
+    this.existingSaldo,
+  });
 
   @override
   _BankerFormComponentState createState() => _BankerFormComponentState();
@@ -13,13 +22,31 @@ class _BankerFormComponentState extends State<BankerFormComponent> {
   final _saldoController = TextEditingController();
   final BankAccountAPI _api = BankAccountAPI();
 
+  @override
+  void initState() {
+    super.initState();
+    // Preenche os campos se houver dados existentes
+    if (widget.existingName != null && widget.existingSaldo != null) {
+      _nameController.text = widget.existingName!;
+      _saldoController.text = widget.existingSaldo!;
+    }
+  }
+
   void _submitForm() async {
     String name = _nameController.text;
     String saldo = _saldoController.text;
 
     if (name.isNotEmpty && saldo.isNotEmpty) {
       String body = '{"name": "$name", "saldo": $saldo}';
-      await _api.save(body);
+
+      if (widget.clientId != null) {
+        // Se houver clientId, realiza um PUT para editar
+        await _api.put(widget.clientId!, body);
+      } else {
+        // Se não, realiza um POST para criar
+        await _api.save(body);
+      }
+
       Navigator.pop(context);
     }
   }
@@ -64,9 +91,8 @@ class _BankerFormComponentState extends State<BankerFormComponent> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  backgroundColor: Colors.green, // Cor de fundo do botão
-                  foregroundColor:
-                      Colors.white, // Cor do texto do botão (branca)
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontSize: 18),
                 ),
                 child: const Text('Salvar'),

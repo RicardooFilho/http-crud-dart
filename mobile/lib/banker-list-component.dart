@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'bank-component.dart';
 import 'dart:convert';
 import 'banker-form-component.dart';
-import 'package:intl/intl.dart'; // Para formatação de números
+import 'package:intl/intl.dart';
 
 class BankerListComponent extends StatefulWidget {
   const BankerListComponent({super.key});
@@ -31,6 +31,19 @@ class _BankerListComponentState extends State<BankerListComponent> {
   void _deleteClient(String idBanker) async {
     await _api.deleteById(idBanker);
     _getClients();
+  }
+
+  void _editClient(String idBanker, String existingName, String existingSaldo) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BankerFormComponent(
+          clientId: idBanker,
+          existingName: existingName,
+          existingSaldo: existingSaldo,
+        ),
+      ),
+    ).then((_) => _getClients());
   }
 
   String _formatCurrency(double saldo) {
@@ -76,9 +89,18 @@ class _BankerListComponentState extends State<BankerListComponent> {
                     fontSize: 16,
                   ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteClient(client['id']),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () => _editClient(client['id'], client['name'], client['saldo'].toString()),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteClient(client['id']),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -89,7 +111,7 @@ class _BankerListComponentState extends State<BankerListComponent> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => BankerFormComponent()),
+            MaterialPageRoute(builder: (context) => const BankerFormComponent()),
           ).then((_) => _getClients());
         },
         child: const Icon(Icons.add),
